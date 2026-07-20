@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f5;
+    --gray-100: #e8e8e8;
+    --gray-300: #999;
+    --gray-500: #555;
+    --gray-700: #2a2a2a;
+    --gray-800: #1a1a1a;
+    --accent: #c8c8c8;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 20px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--gray-300);
+    letter-spacing: 0.05em;
+  }
+  .nav-logo span { color: var(--white); }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: 13px; color: var(--gray-300);
+    text-decoration: none; letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em;
+    color: var(--gray-300); text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-title {
+    font-size: clamp(40px, 6vw, 80px);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--white);
+    max-width: 800px;
+    margin-bottom: 32px;
+    opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+  .hero-title em {
+    font-style: normal;
+    color: var(--gray-300);
+  }
+
+  .hero-sub {
+    font-size: 16px; color: var(--gray-300);
+    max-width: 480px; line-height: 1.7;
+    margin-bottom: 56px;
+    opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--gray-800);
+    border: 1px solid var(--gray-700);
+    color: var(--gray-100);
+    padding: 14px 24px;
+    border-radius: 4px;
+    opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .hero-cmd:hover { background: var(--gray-700); border-color: var(--gray-500); }
+  .hero-cmd .prompt { color: var(--gray-500); }
+
+  /* GRID BACKGROUND */
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* STATS */
+  .stats {
+    display: flex; gap: 64px;
+    padding: 64px 48px;
+    border-top: 1px solid var(--gray-700);
+    border-bottom: 1px solid var(--gray-700);
+  }
+  .stat { opacity: 0; }
+  .stat.visible { animation: fadeUp 0.6s ease forwards; }
+  .stat-number {
+    font-size: 48px; font-weight: 300;
+    letter-spacing: -0.04em;
+    color: var(--white);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .stat-label {
+    font-size: 12px; color: var(--gray-300);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* SECTION */
+  section { padding: 96px 48px; }
+  .section-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em;
+    color: var(--gray-500); text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 300; letter-spacing: -0.02em;
+    color: var(--white); max-width: 600px;
+    line-height: 1.2; margin-bottom: 64px;
+  }
+
+  /* CARDS */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--gray-700); }
+  .card {
+    background: var(--black);
+    padding: 40px 32px;
+    opacity: 0; transform: translateY(20px);
+    transition: background 0.3s;
+  }
+  .card.visible { animation: fadeUp 0.6s ease forwards; }
+  .card:hover { background: var(--gray-800); }
+  .card-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--gray-500);
+    letter-spacing: 0.1em; margin-bottom: 24px;
+  }
+  .card-title {
+    font-size: 18px; font-weight: 500;
+    color: var(--white); margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .card-body { font-size: 14px; color: var(--gray-300); line-height: 1.7; }
+
+  /* PIPELINE */
+  .pipeline { display: flex; gap: 0; position: relative; }
+  .pipeline::before {
+    content: '';
+    position: absolute;
+    top: 24px; left: 24px; right: 24px;
+    height: 1px; background: var(--gray-700);
+  }
+  .pipe-step {
+    flex: 1; padding: 0 16px;
+    opacity: 0;
+  }
+  .pipe-step.visible { animation: fadeUp 0.5s ease forwards; }
+  .pipe-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--gray-700);
+    border: 1px solid var(--gray-500);
+    margin-bottom: 24px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .pipe-step:hover .pipe-dot { background: var(--white); border-color: var(--white); }
+  .pipe-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--gray-500);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .pipe-name { font-size: 15px; color: var(--white); font-weight: 500; margin-bottom: 8px; }
+  .pipe-desc { font-size: 13px; color: var(--gray-300); line-height: 1.6; }
+
+  /* OUTPUT PREVIEW */
+  .output-preview {
+    background: var(--gray-800);
+    border: 1px solid var(--gray-700);
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0;
+  }
+  .output-preview.visible { animation: fadeUp 0.6s ease forwards; }
+  .preview-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gray-700);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .preview-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .preview-filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--gray-300);
+    margin-left: auto;
+  }
+  .preview-body {
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--gray-300);
+  }
+  .preview-body .md-h1 { color: var(--white); font-size: 15px; font-weight: 500; margin-bottom: 16px; }
+  .preview-body .md-h2 { color: var(--gray-100); margin-top: 20px; margin-bottom: 8px; }
+  .preview-body .md-table { color: var(--gray-300); font-size: 12px; }
+  .preview-body .md-highlight { color: #a0c4a0; }
+  .preview-body .md-meta { color: var(--gray-500); font-size: 11px; }
+
+  /* FOOTER */
+  footer {
+    padding: 48px;
+    border-top: 1px solid var(--gray-700);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-left {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--gray-500);
+  }
+  .footer-right { display: flex; gap: 24px; }
+  .footer-right a {
+    font-size: 13px; color: var(--gray-500);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .footer-right a:hover { color: var(--white); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* COUNTER */
+  .counting { display: inline-block; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>model-card</span>-generator</div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#output">Output</a>
+    <a href="#github">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">ML Documentation Tool · Local LLM · Zero Cloud</div>
+  <h1 class="hero-title">
+    Your model ships.<br>
+    <em>The documentation</em><br>
+    ships with it.
+  </h1>
+  <p class="hero-sub">
+    Point it at a training script and a saved model. Get a complete, professional Model Card — written by a local LLM, grounded in your actual code.
+  </p>
+  <div class="hero-cmd">
+    <span class="prompt">$ </span>python cli.py generate training.py -m model.pkl
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat" data-delay="0">
+    <div class="stat-number"><span class="counting" data-target="3">0</span></div>
+    <div class="stat-label">Model types supported</div>
+  </div>
+  <div class="stat" data-delay="100">
+    <div class="stat-number"><span class="counting" data-target="8">0</span></div>
+    <div class="stat-label">Metrics auto-extracted</div>
+  </div>
+  <div class="stat" data-delay="200">
+    <div class="stat-number"><span class="counting" data-target="0">0</span></div>
+    <div class="stat-label">Cloud dependencies</div>
+  </div>
+  <div class="stat" data-delay="300">
+    <div class="stat-number"><span class="counting" data-target="100">0</span>%</div>
+    <div class="stat-label">Reproducible output</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-eyebrow">Pipeline</div>
+  <h2 class="section-title">Five stages. One command.</h2>
+
+  <div class="pipeline">
+    <div class="pipe-step" data-delay="0">
+      <div class="pipe-dot"></div>
+      <div class="pipe-label">01</div>
+      <div class="pipe-name">Code Parser</div>
+      <div class="pipe-desc">AST + regex extracts hyperparameters, seed, split ratio from your training script.</div>
+    </div>
+    <div class="pipe-step" data-delay="100">
+      <div class="pipe-dot"></div>
+      <div class="pipe-label">02</div>
+      <div class="pipe-name">Model Inspector</div>
+      <div class="pipe-desc">Loads the saved model and reads params, feature count, output type directly.</div>
+    </div>
+    <div class="pipe-step" data-delay="200">
+      <div class="pipe-dot"></div>
+      <div class="pipe-label">03</div>
+      <div class="pipe-name">Metrics Loader</div>
+      <div class="pipe-desc">Picks up evaluation metrics from JSON or extracts them from code patterns.</div>
+    </div>
+    <div class="pipe-step" data-delay="300">
+      <div class="pipe-dot"></div>
+      <div class="pipe-label">04</div>
+      <div class="pipe-name">Local LLM</div>
+      <div class="pipe-desc">Hermes3 via Ollama writes Intended Use and Limitations — grounded in real metadata.</div>
+    </div>
+    <div class="pipe-step" data-delay="400">
+      <div class="pipe-dot"></div>
+      <div class="pipe-label">05</div>
+      <div class="pipe-name">Card Generator</div>
+      <div class="pipe-desc">Assembles a structured MODEL_CARD.md ready to commit to any repo.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section style="padding-top: 0;">
+  <div class="section-eyebrow">Features</div>
+  <h2 class="section-title">Everything a reviewer needs to trust your model.</h2>
+
+  <div class="cards">
+    <div class="card" data-delay="0">
+      <div class="card-icon">EXTRACT</div>
+      <div class="card-title">Zero-config extraction</div>
+      <div class="card-body">Reads your existing code as-is. No decorators, no schema, no changes to your training pipeline.</div>
+    </div>
+    <div class="card" data-delay="100">
+      <div class="card-icon">LLM</div>
+      <div class="card-title">Local LLM, real writing</div>
+      <div class="card-body">Hermes3 runs on your machine. Your data never leaves. The prose it writes is grounded in actual extracted values.</div>
+    </div>
+    <div class="card" data-delay="200">
+      <div class="card-icon">SUPPORT</div>
+      <div class="card-title">sklearn · XGBoost · PyTorch</div>
+      <div class="card-body">Handles the three dominant ML frameworks. Detects model type automatically from imports.</div>
+    </div>
+    <div class="card" data-delay="300">
+      <div class="card-icon">CLI</div>
+      <div class="card-title">Clean CLI interface</div>
+      <div class="card-body">One command with sensible defaults. Override output path, metrics file, or LLM model as needed.</div>
+    </div>
+    <div class="card" data-delay="400">
+      <div class="card-icon">REPRO</div>
+      <div class="card-title">Reproducibility section</div>
+      <div class="card-body">Generates exact commands to retrain and regenerate the card — tied to your actual file names.</div>
+    </div>
+    <div class="card" data-delay="500">
+      <div class="card-icon">OUTPUT</div>
+      <div class="card-title">GitHub-ready Markdown</div>
+      <div class="card-body">Drop MODEL_CARD.md into any repo. Tables render on GitHub. No extra tooling required.</div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTPUT PREVIEW -->
+<section id="output">
+  <div class="section-eyebrow">Output</div>
+  <h2 class="section-title reveal">What gets generated.</h2>
+
+  <div class="output-preview reveal">
+    <div class="preview-header">
+      <div class="preview-dot" style="background:#444"></div>
+      <div class="preview-dot" style="background:#444"></div>
+      <div class="preview-dot" style="background:#444"></div>
+      <div class="preview-filename">MODEL_CARD.md</div>
+    </div>
+    <div class="preview-body">
+      <div class="md-meta"># Auto-generated · 2026-07-21</div>
+      <br>
+      <div class="md-h1"># Model Card: XGBoost</div>
+      <div class="md-h2">## Model Details</div>
+      <div class="md-table">| Model Class &nbsp;&nbsp;&nbsp;| XGBClassifier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</div>
+      <div class="md-table">| Dataset &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Breast Cancer &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</div>
+      <div class="md-table">| Output Type &nbsp;&nbsp;| Classification — 2 classes |</div>
+      <div class="md-table">| Feature Count | <span class="md-highlight">30</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</div>
+      <div class="md-table">| Random Seed &nbsp;&nbsp;| <span class="md-highlight">42</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</div>
+      <br>
+      <div class="md-h2">## Evaluation Metrics</div>
+      <div class="md-table">| accuracy &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="md-highlight">0.9561</span> |</div>
+      <div class="md-table">| f1_score_weighted | <span class="md-highlight">0.9560</span> |</div>
+      <br>
+      <div class="md-h2">## Intended Use</div>
+      <div style="color: var(--gray-300); font-size: 12px; line-height: 1.8;">The XGBoost model is intended for binary classification<br>of the Breast Cancer dataset, distinguishing between<br>two classes with high accuracy.</div>
+      <br>
+      <div class="md-h2">## Limitations</div>
+      <div style="color: var(--gray-300); font-size: 12px; line-height: 1.9;">
+        - Limited to the specific dataset without retraining.<br>
+        - Fixed hyperparameters may not adapt to new distributions.<br>
+        - Performance based on a single train-test split.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">model-card-generator · built with Hermes3 + Ollama</div>
+  <div class="footer-right">
+    <a href="#" id="github">GitHub</a>
+    <a href="#">README</a>
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for scroll reveals
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const delay = el.dataset.delay || 0;
+        setTimeout(() => {
+          el.classList.add('visible');
+        }, parseInt(delay));
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  // Observe stats
+  document.querySelectorAll('.stat').forEach(el => observer.observe(el));
+
+  // Observe cards
+  document.querySelectorAll('.card').forEach(el => observer.observe(el));
+
+  // Observe pipeline steps
+  document.querySelectorAll('.pipe-step').forEach(el => observer.observe(el));
+
+  // Observe reveals
+  document.querySelectorAll('.reveal, .output-preview').forEach(el => observer.observe(el));
+
+  // Counter animation
+  function animateCounter(el, target, duration = 1200) {
+    const start = performance.now();
+    const update = (time) => {
+      const progress = Math.min((time - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(eased * target);
+      if (progress < 1) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  }
+
+  const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const counters = entry.target.querySelectorAll('.counting');
+        counters.forEach(counter => {
+          const target = parseInt(counter.dataset.target);
+          animateCounter(counter, target);
+        });
+        statsObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  statsObserver.observe(document.querySelector('.stats'));
+
+  // CLI copy hint
+  document.querySelector('.hero-cmd').addEventListener('click', function() {
+    this.textContent = '✓ copied to clipboard';
+    this.style.color = '#a0c4a0';
+    setTimeout(() => {
+      this.innerHTML = '<span class="prompt">$ </span>python cli.py generate training.py -m model.pkl';
+      this.style.color = '';
+    }, 1500);
+  });
+</script>
+
+</body>
+</html>
